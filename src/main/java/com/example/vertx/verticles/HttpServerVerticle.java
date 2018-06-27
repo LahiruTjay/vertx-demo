@@ -2,7 +2,6 @@ package com.example.vertx.verticles;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 
 public class HttpServerVerticle extends AbstractVerticle {
@@ -20,10 +19,8 @@ public class HttpServerVerticle extends AbstractVerticle {
 
 	private Router getRouter() {
 		Router router = Router.router(vertx);
-		router.route("/").handler(routingContext -> {
-			HttpServerResponse response = routingContext.response();
-			response.putHeader("content-type", "text/html").end("This is the Main page");
-		});
+		UserRoutes.getAllUsers(router);
+		UserRoutes.getUserById(router);
 		return router;
 	}
 }
