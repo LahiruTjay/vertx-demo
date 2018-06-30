@@ -19,8 +19,8 @@ public class HttpServerVerticle extends AbstractVerticle {
 
 	private Router getRouter() {
 		Router router = Router.router(vertx);
-		UserRoutes.getAllUsers(router);
-		UserRoutes.getUserById(router);
+		router.get("/users").handler(UserAPI::getAllUsers);
+		router.get("/users/:id").handler(UserAPI::getUserById);
 		return router;
 	}
 }
