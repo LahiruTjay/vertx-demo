@@ -1,6 +1,7 @@
 package com.example.vertx.verticles;
 
 import com.example.vertx.service.UserService;
+import com.example.vertx.service.impl.UserServiceImpl;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
@@ -9,23 +10,28 @@ import io.vertx.ext.web.RoutingContext;
 
 public class UserRouter {
 
-	public static Vertx vertx;
+	private static Vertx vertx;
+	private UserService userService;
 
-	public static Router getUserRouter() {
+	public UserRouter() {
+		userService = new UserServiceImpl();
+	}
+
+	public Router getUserRouter() {
 		Router router = Router.router(vertx);
-		router.get("/").handler(UserRouter::getAllUsers);
-		router.get("/:id").handler(UserRouter::getUserById);
+		router.get("/").handler(this::getAllUsers);
+		router.get("/:id").handler(this::getUserById);
 		return router;
 	}
 
-	private static void getAllUsers(RoutingContext routingContext) {
+	private void getAllUsers(RoutingContext routingContext) {
 		routingContext.response().putHeader("contetent-type", "application/json")
-				.end(Json.encodePrettily(UserService.getAllUsers()));
+				.end(Json.encodePrettily(userService.getAllUsers()));
 	}
 
-	private static void getUserById(RoutingContext routingContext) {
+	private void getUserById(RoutingContext routingContext) {
 		long id = Long.parseLong(routingContext.request().getParam("id"));
 		routingContext.response().putHeader("contetent-type", "application/json")
-				.end(Json.encodePrettily(UserService.getUserById(id)));
+				.end(Json.encodePrettily(userService.getUserById(id)));
 	}
 }

@@ -19,7 +19,7 @@ public class HttpServerVerticle extends AbstractVerticle {
 
 	private Router getRouter() {
 		Router mainRouter = Router.router(vertx);
-		mainRouter.mountSubRouter("/users", UserRouter.getUserRouter());
+		mainRouter.mountSubRouter("/users", new UserRouter().getUserRouter());
 		return mainRouter;
 	}
 }
