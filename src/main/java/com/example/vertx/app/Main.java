@@ -1,6 +1,7 @@
 package com.example.vertx.app;
 
 import com.example.vertx.verticles.HttpServerVerticle;
+import com.example.vertx.verticles.JDBCTestVerticle;
 
 import io.vertx.core.Vertx;
 
@@ -12,9 +13,10 @@ public class Main {
 		// VertxOptions options = new VertxOptions();
 		vertx = Vertx.vertx();
 		deployVerticle(HttpServerVerticle.class, "Http Vericle");
+		deployVerticle(JDBCTestVerticle.class, "JDBC Vericle");
 	}
 
-	private static void deployVerticle(Class<HttpServerVerticle> verticleClass, String name) {
+	private static void deployVerticle(Class<?> verticleClass, String name) {
 		vertx.deployVerticle(verticleClass.getName(), response -> {
 			if (response.succeeded()) {
 				String deploymentId = response.result();
