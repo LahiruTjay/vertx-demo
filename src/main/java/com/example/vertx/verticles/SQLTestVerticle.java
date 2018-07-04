@@ -12,7 +12,7 @@ public class SQLTestVerticle extends AbstractVerticle {
 	public void start() throws Exception {
 
 		final JDBCClient client = JDBCClient.createShared(vertx,
-				new JsonObject().put("url", "jdbc:mysql://localhost/test")
+				new JsonObject().put("url", "jdbc:mysql://localhost/demo_db")
 						.put("driver_class", "com.mysql.cj.jdbc.Driver").put("user", "root").put("password", "root"));
 
 		client.getConnection(conn -> {
@@ -24,7 +24,7 @@ public class SQLTestVerticle extends AbstractVerticle {
 
 			final SQLConnection connection = conn.result();
 
-			connection.query("SELECT * FROM test_table", result -> {
+			connection.query("SELECT * FROM user", result -> {
 
 				for (JsonArray line : result.result().getResults()) {
 					System.out.println(line.encode());
