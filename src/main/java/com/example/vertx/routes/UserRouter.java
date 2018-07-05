@@ -1,4 +1,4 @@
-package com.example.vertx.verticles;
+package com.example.vertx.routes;
 
 import com.example.vertx.service.UserService;
 import com.example.vertx.service.impl.UserServiceImpl;
@@ -33,5 +33,21 @@ public class UserRouter {
 		long id = Long.parseLong(routingContext.request().getParam("id"));
 		routingContext.response().putHeader("contetent-type", "application/json")
 				.end(Json.encodePrettily(userService.getUserById(id)));
+	}
+
+	private void createUser(RoutingContext routingContext) {
+
+	}
+
+	private void updateUser(RoutingContext routingContext) {
+
+	}
+
+	private void deleteUserById(RoutingContext routingContext) {
+
+	}
+
+	private void deleteAllUsers(RoutingContext routingContext) {
+
 	}
 }
