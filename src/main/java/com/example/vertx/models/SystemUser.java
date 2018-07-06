@@ -1,5 +1,7 @@
 package com.example.vertx.models;
 
+import io.vertx.core.json.JsonObject;
+
 public class SystemUser {
 
 	private long id;
@@ -38,6 +40,13 @@ public class SystemUser {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public SystemUser getSystemUser(JsonObject obj) {
+		long id = obj.getLong("id");
+		String name = obj.getString("username");
+		String email = obj.getString("email");
+		return new SystemUser(id, name, email);
 	}
 
 }

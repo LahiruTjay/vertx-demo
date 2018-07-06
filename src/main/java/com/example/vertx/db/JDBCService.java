@@ -1,22 +1,61 @@
 package com.example.vertx.db;
 
+import java.util.List;
+import java.util.Optional;
+
+import com.example.vertx.models.SystemUser;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
+import io.vertx.ext.sql.SQLConnection;
 
 public class JDBCService {
 
-	private Vertx vertx;
 	private JDBCClient jdbcClient;
 
-	public JDBCService(Vertx vertx) {
-		this.vertx = vertx;
-		this.jdbcClient = JDBCClient.createShared(vertx,
-				new JsonObject().put("url", "jdbc:hsqldb:mem:test?shutdown=true")
-						.put("driver_class", "org.hsqldb.jdbcDriver")
-						.put("max_pool_size", 30).put("user", "SA")
-						.put("password", ""));
+	public JDBCService() {
+		this(Vertx.vertx());
 	}
-	
+
+	public JDBCService(Vertx vertx) {
+		this.jdbcClient = JDBCClient.createShared(vertx, new JsonObject().put("url", "jdbc:mysql://localhost/demo_db?autoReconnect=true&useSSL=false")
+				.put("driver_class", "com.mysql.cj.jdbc.Driver").put("user", "root").put("password", "root"));
+	}
+
+	private Handler<AsyncResult<SQLConnection>> connHandler(Future<Optional<SystemUser>> future,
+			Handler<SQLConnection> handler) {
+		return conn -> {
+			if (conn.succeeded()) {
+				SQLConnection connection = conn.result();
+				handler.handle(connection);
+			} else {
+				future.fail(conn.cause());
+			}
+		};
+	}
+
+	public Future<Optional<SystemUser>> getUserById(long userId) {
+		Future<Optional<SystemUser>> result = Future.future();
+		jdbcClient.getConnection(connHandler(result, connection -> {
+			connection.queryWithParams("SELECT * FROM user WHERE id = ?", new JsonArray().add(userId), res -> {
+				if (res.failed()) {
+					result.fail(res.cause());
+				} else {
+					List<JsonObject> list = res.result().getRows();
+					if (list == null || list.isEmpty()) {
+						result.complete(Optional.empty());
+					} else {
+						result.complete(Optional.of(new SystemUser().getSystemUser(list.get(0))));
+					}
+				}
+			});
+		}));
+		return result;
+	}
 
 }

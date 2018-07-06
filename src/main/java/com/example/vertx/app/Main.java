@@ -1,7 +1,6 @@
 package com.example.vertx.app;
 
 import com.example.vertx.verticles.HttpServerVerticle;
-import com.example.vertx.verticles.SQLTestVerticle;
 
 import io.vertx.core.Vertx;
 
@@ -14,7 +13,7 @@ public class Main {
 		vertx = Vertx.vertx();
 		deployVerticle(HttpServerVerticle.class, "Http Verticle");
 		// deployVerticle(JDBCTestVerticle.class, "JDBC Verticle");
-		deployVerticle(SQLTestVerticle.class, "MySQl Verticle");
+		// deployVerticle(SQLTestVerticle.class, "MySQl Verticle");
 	}
 
 	private static void deployVerticle(Class<?> verticleClass, String name) {
