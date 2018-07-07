@@ -1,6 +1,7 @@
 package com.example.vertx.routes;
 
 import com.example.vertx.db.JDBCService;
+import com.example.vertx.models.SystemUser;
 import com.example.vertx.service.UserService;
 import com.example.vertx.service.impl.UserServiceImpl;
 
@@ -8,8 +9,9 @@ import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Cons
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
@@ -40,7 +42,7 @@ public class UserRouter {
 	}
 
 	private void badRequest(RoutingContext routingContext) {
-		routingContext.response().setStatusCode(404).end();
+		routingContext.response().setStatusCode(400).end();
 	}
 
 	private <T> Handler<AsyncResult<T>> resultHandler(RoutingContext routingContext, Consumer<T> consumer) {
@@ -68,12 +70,25 @@ public class UserRouter {
 
 		long userId = Long.parseLong(param);
 
-		jdbcService.getUserById(userId).setHandler(resultHandler(routingContext, res -> {
+		/*jdbcService.getUserById(userId).setHandler(resultHandler(routingContext, res -> {
 			if (!res.isPresent()) {
 				notFound(routingContext);
 			} else {
 				String userObj = Json.encodePrettily(res.get());
 				routingContext.response().putHeader("content-type", "application/json").end(userObj);
+			}
+		}));*/
+		
+		
+		jdbcService.getEntityByParams("SELECT * FROM user WHERE id = ?", new JsonArray().add(userId)).setHandler(resultHandler(routingContext, res -> {
+			if (!res.isPresent()) {
+				notFound(routingContext);
+			} else {
+				
+				//String userObj = Json.encodePrettily(res.get());
+				
+				SystemUser user = new SystemUser().getSystemUser((JsonObject) res.get());
+				routingContext.response().putHeader("content-type", "application/json").end(Json.encodePrettily(user));
 			}
 		}));
 	}

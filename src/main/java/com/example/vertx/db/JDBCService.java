@@ -23,8 +23,9 @@ public class JDBCService {
 	}
 
 	public JDBCService(Vertx vertx) {
-		this.jdbcClient = JDBCClient.createShared(vertx, new JsonObject().put("url", "jdbc:mysql://localhost/demo_db?autoReconnect=true&useSSL=false")
-				.put("driver_class", "com.mysql.cj.jdbc.Driver").put("user", "root").put("password", "root"));
+		this.jdbcClient = JDBCClient.createShared(vertx,
+				new JsonObject().put("url", "jdbc:mysql://localhost/demo_db?autoReconnect=true&useSSL=false")
+						.put("driver_class", "com.mysql.cj.jdbc.Driver").put("user", "root").put("password", "root"));
 	}
 
 	private Handler<AsyncResult<SQLConnection>> connHandler(Future<Optional<SystemUser>> future,
@@ -37,6 +38,38 @@ public class JDBCService {
 				future.fail(conn.cause());
 			}
 		};
+	}
+
+	private Handler<AsyncResult<SQLConnection>> connHandler2(Future<Optional<?>> future,
+			Handler<SQLConnection> handler) {
+		return conn -> {
+			if (conn.succeeded()) {
+				SQLConnection connection = conn.result();
+				handler.handle(connection);
+			} else {
+				future.fail(conn.cause());
+			}
+		};
+	}
+
+	public Future<Optional<?>> getEntityByParams(String sqlQuery, JsonArray array) {
+		Future<Optional<?>> result = Future.future();
+		jdbcClient.getConnection(connHandler2(result, connection -> {
+			connection.queryWithParams(sqlQuery, array, res -> {
+				if (res.failed()) {
+					result.fail(res.cause());
+				} else {
+					List<JsonObject> list = res.result().getRows();
+					if (list == null || list.isEmpty()) {
+						result.complete(Optional.empty());
+					} else {
+						result.complete(Optional.of(list.get(0)));
+					}
+				}
+				connection.close();
+			});
+		}));
+		return result;
 	}
 
 	public Future<Optional<SystemUser>> getUserById(long userId) {
@@ -53,6 +86,7 @@ public class JDBCService {
 						result.complete(Optional.of(new SystemUser().getSystemUser(list.get(0))));
 					}
 				}
+				connection.close();
 			});
 		}));
 		return result;
