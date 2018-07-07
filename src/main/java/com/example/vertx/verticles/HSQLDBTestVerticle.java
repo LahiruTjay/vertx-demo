@@ -6,7 +6,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.jdbc.JDBCClient;
 import io.vertx.ext.sql.SQLConnection;
 
-public class JDBCTestVerticle extends AbstractVerticle {
+public class HSQLDBTestVerticle extends AbstractVerticle {
 
 	@Override
 	public void start() throws Exception {
@@ -33,11 +33,9 @@ public class JDBCTestVerticle extends AbstractVerticle {
 
 				connection.execute("INSERT INTO test VALUES (1, 'Hello')", insert -> {
 					connection.query("SELECT * FROM test", result -> {
-
 						for (JsonArray line : result.result().getResults()) {
 							System.out.println(line.encode());
 						}
-
 						connection.close(done -> {
 							if (done.failed()) {
 								throw new RuntimeException(done.cause());

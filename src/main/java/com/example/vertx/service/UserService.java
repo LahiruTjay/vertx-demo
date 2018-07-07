@@ -1,11 +1,9 @@
 package com.example.vertx.service;
 
-import com.example.vertx.dto.CommonHttpResponse;
+import io.vertx.ext.web.RoutingContext;
 
 public interface UserService {
 
-	CommonHttpResponse getAllUsers();
-
-	CommonHttpResponse getUserById(long id);
+	void getUserById(RoutingContext routingContext);
 
 }
