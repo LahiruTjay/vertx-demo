@@ -22,14 +22,11 @@ public class JDBCService {
 
 	public JDBCService(Vertx vertx) {
 		this.jdbcClient = JDBCClient.createShared(vertx,
-				new JsonObject()
-				.put("url", "jdbc:mysql://localhost/demo_db?autoReconnect=true&useSSL=false")
-				.put("driver_class", "com.mysql.cj.jdbc.Driver")
-				.put("user", "root")
-				.put("password", "root"));
+				new JsonObject().put("url", "jdbc:mysql://localhost/demo_db?autoReconnect=true&useSSL=false")
+						.put("driver_class", "com.mysql.cj.jdbc.Driver").put("user", "root").put("password", "root"));
 	}
 
-	private Handler<AsyncResult<SQLConnection>> connHandler(Future<Optional<?>> future, Handler<SQLConnection> handler) {
+	private Handler<AsyncResult<SQLConnection>> connHandler(Future<?> future, Handler<SQLConnection> handler) {
 		return conn -> {
 			if (conn.succeeded()) {
 				SQLConnection connection = conn.result();
@@ -40,7 +37,7 @@ public class JDBCService {
 		};
 	}
 
-	public Future<Optional<?>> getEntityByParams(String sqlQuery, JsonArray array) {
+	public Future<Optional<?>> getSingleEntityByParams(String sqlQuery, JsonArray array) {
 		Future<Optional<?>> result = Future.future();
 		jdbcClient.getConnection(connHandler(result, connection -> {
 			connection.queryWithParams(sqlQuery, array, res -> {
@@ -51,7 +48,7 @@ public class JDBCService {
 					if (list == null || list.isEmpty()) {
 						result.complete(Optional.empty());
 					} else {
-						result.complete(Optional.of(list.get(0)));
+						result.complete(Optional.of(list));
 					}
 				}
 				connection.close();
@@ -59,5 +56,4 @@ public class JDBCService {
 		}));
 		return result;
 	}
-
 }

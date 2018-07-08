@@ -17,7 +17,9 @@ public class UserRouter {
 
 	public Router getUserRouter() {
 		Router router = Router.router(vertx);
+		router.get("/").handler(userService::gerAllUsers);
 		router.get("/:id").handler(userService::getUserById);
+		router.post("/").handler(userService::saveUser);
 		return router;
 	}
 }
