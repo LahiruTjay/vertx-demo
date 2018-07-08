@@ -20,6 +20,9 @@ public class UserRouter {
 		router.get("/").handler(userService::gerAllUsers);
 		router.get("/:id").handler(userService::getUserById);
 		router.post("/").handler(userService::saveUser);
+		router.patch("/:id").handler(userService::updateUser);
+		router.delete("/:id").handler(userService::deleteUserById);
+		router.delete("/").handler(userService::deleteAllUsers);
 		return router;
 	}
 }

@@ -24,12 +24,10 @@ public class UserServiceImpl extends CommonHttpUtil implements UserService {
 
 	@Override
 	public void saveUser(RoutingContext routingContext) {
-
 		JsonObject userObj = routingContext.getBodyAsJson();
 		String name = userObj.getString("username");
 		String email = userObj.getString("email");
-
-		String sqlQuery = "INSERT INTO user (username, email) VALUES (?, ?)";
+		String sqlQuery = SQLQueries.SQL_INSERT_USER;
 		JsonArray queryParam = new JsonArray().add(name).add(email);
 
 		jdbcService.saveOrUpdateEntity(sqlQuery, queryParam).setHandler(resultHandler(routingContext, res -> {
@@ -40,6 +38,28 @@ public class UserServiceImpl extends CommonHttpUtil implements UserService {
 				serviceUnavailable(routingContext);
 			}
 		}));
+	}
+
+	@Override
+	public void updateUser(RoutingContext routingContext) {
+
+		long id = Long.parseLong(routingContext.request().getParam("id"));
+
+		JsonObject userObj = routingContext.getBodyAsJson();
+		String name = userObj.getString("username");
+		String email = userObj.getString("email");
+		String sqlQuery = SQLQueries.SQL_UPDATE_USER;
+		JsonArray queryParam = new JsonArray().add(name).add(email).add(id);
+
+		jdbcService.saveOrUpdateEntity(sqlQuery, queryParam).setHandler(resultHandler(routingContext, res -> {
+			if (res) {
+				routingContext.response().putHeader("content-type", "application/json")
+						.end(Json.encodePrettily(userObj));
+			} else {
+				serviceUnavailable(routingContext);
+			}
+		}));
+
 	}
 
 	@Override
@@ -73,13 +93,42 @@ public class UserServiceImpl extends CommonHttpUtil implements UserService {
 
 		jdbcService.getSingleEntityByParams(sqlQuery, queryParam).setHandler(resultHandler(routingContext, res -> {
 			if (!res.isPresent()) {
-
+				notFound(routingContext);
 			} else {
 				List<JsonObject> list = (List<JsonObject>) res.get();
 				List<SystemUser> userList = list.stream().map(obj -> new SystemUser().getSystemUser(obj))
 						.collect(Collectors.toList());
 				routingContext.response().putHeader("content-type", "application/json")
 						.end(Json.encodePrettily(userList));
+			}
+		}));
+	}
+
+	@Override
+	public void deleteUserById(RoutingContext routingContext) {
+		Long id = Long.parseLong(routingContext.request().getParam("id"));
+		String sqlQuery = SQLQueries.SQL_DELETE_USER_BY_ID;
+		JsonArray queryParam = new JsonArray().add(id);
+
+		jdbcService.saveOrUpdateEntity(sqlQuery, queryParam).setHandler(resultHandler(routingContext, res -> {
+			if (res) {
+				routingContext.response().end();
+			} else {
+				serviceUnavailable(routingContext);
+			}
+		}));
+	}
+
+	@Override
+	public void deleteAllUsers(RoutingContext routingContext) {
+		String sqlQuery = SQLQueries.SQL_DELETE_ALL_USERS;
+		JsonArray queryParam = new JsonArray();
+
+		jdbcService.saveOrUpdateEntity(sqlQuery, queryParam).setHandler(resultHandler(routingContext, res -> {
+			if (res) {
+				routingContext.response().end();
+			} else {
+				serviceUnavailable(routingContext);
 			}
 		}));
 	}
