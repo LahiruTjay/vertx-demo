@@ -21,13 +21,25 @@ public class UserServiceImpl extends CommonHttpUtil implements UserService {
 	public UserServiceImpl() {
 		jdbcService = new JDBCService();
 	}
-	
+
 	@Override
 	public void saveUser(RoutingContext routingContext) {
+
 		JsonObject userObj = routingContext.getBodyAsJson();
 		String name = userObj.getString("username");
 		String email = userObj.getString("email");
-		routingContext.response().putHeader("content-type", "application/json").end(Json.encodePrettily(userObj));
+
+		String sqlQuery = "INSERT INTO user (username, email) VALUES (?, ?)";
+		JsonArray queryParam = new JsonArray().add(name).add(email);
+
+		jdbcService.saveOrUpdateEntity(sqlQuery, queryParam).setHandler(resultHandler(routingContext, res -> {
+			if (res) {
+				routingContext.response().putHeader("content-type", "application/json")
+						.end(Json.encodePrettily(userObj));
+			} else {
+				serviceUnavailable(routingContext);
+			}
+		}));
 	}
 
 	@Override

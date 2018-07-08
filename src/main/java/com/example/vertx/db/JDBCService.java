@@ -56,4 +56,19 @@ public class JDBCService {
 		}));
 		return result;
 	}
+
+	public Future<Boolean> saveOrUpdateEntity(String sqlQuery, JsonArray array) {
+		Future<Boolean> result = Future.future();
+		jdbcClient.getConnection(connHandler(result, connection -> {
+			connection.updateWithParams(sqlQuery, array, res -> {
+				if (res.failed()) {
+					result.fail(res.cause());
+				} else {
+					result.complete(true);
+				}
+				connection.close();
+			});
+		}));
+		return result;
+	}
 }
