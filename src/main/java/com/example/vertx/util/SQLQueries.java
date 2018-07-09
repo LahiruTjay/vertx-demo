@@ -1,4 +1,4 @@
-package com.example.vertx.db;
+package com.example.vertx.util;
 
 public class SQLQueries {
 

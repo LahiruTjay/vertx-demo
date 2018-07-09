@@ -4,11 +4,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.example.vertx.dto.CommonHttpResponse;
 import com.example.vertx.routes.UserRouter;
+import com.example.vertx.util.CommonConstants;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
@@ -35,10 +38,15 @@ public class HttpServerVerticle extends AbstractVerticle {
 
 		mainRouter.route().handler(CorsHandler.create("*").allowedHeaders(headers).allowedMethods(httpMethods));
 		mainRouter.route().handler(BodyHandler.create());
+		mainRouter.route().last().handler(routingContext -> {
+			routingContext.response().setStatusCode(404).end(Json.encodePrettily(
+					new CommonHttpResponse(CommonConstants.CODE_FAILED, CommonConstants.HTTP_404_NOT_FOUND)));
+		});
 
 		// Add sub-router for user service
+		mainRouter.mountSubRouter("/users", new UserRouter().testRouter());
 		mainRouter.mountSubRouter("/users", new UserRouter().getUserRouter());
-		
+
 		return mainRouter;
 	}
 }

@@ -15,6 +15,15 @@ public class UserRouter {
 		userService = new UserServiceImpl();
 	}
 
+	public Router testRouter() {
+		Router router = Router.router(vertx);
+		router.get().handler(routingContext -> {
+			System.out.println("Comes here 1");
+			routingContext.next();
+		});
+		return router;
+	}
+
 	public Router getUserRouter() {
 		Router router = Router.router(vertx);
 		router.get("/").handler(userService::gerAllUsers);
