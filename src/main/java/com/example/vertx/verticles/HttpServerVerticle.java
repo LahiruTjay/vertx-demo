@@ -18,38 +18,48 @@ import io.vertx.ext.web.handler.CorsHandler;
 
 public class HttpServerVerticle extends AbstractVerticle {
 
-	@Override
-	public void start(Future<Void> future) {
-		vertx.createHttpServer().requestHandler(getRouter()::accept).listen(8080, result -> {
-			if (result.succeeded()) {
-				future.complete();
-			} else {
-				future.fail(result.cause());
-			}
-		});
-	}
+    @Override
+    public void start(Future<Void> future) {
+        vertx.createHttpServer()
+            .requestHandler(getRouter()::accept)
+            .listen(8080, result -> {
+                if (result.succeeded()) {
+                    future.complete();
+                } else {
+                    future.fail(result.cause());
+                }
+            });
+    }
 
-	private Router getRouter() {
+    private Router getRouter() {
 
-		Router mainRouter = Router.router(vertx);
+        Router mainRouter = Router.router(vertx);
 
-		Set<HttpMethod> httpMethods = Stream.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH)
-				.collect(Collectors.toSet());
-		Set<String> headers = Stream.of("Content-Type", "Access-Control-Allow-Origin").collect(Collectors.toSet());
+        Set<HttpMethod> httpMethods = Stream.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PATCH)
+            .collect(Collectors.toSet());
+        Set<String> headers = Stream.of("Content-Type", "Access-Control-Allow-Origin")
+            .collect(Collectors.toSet());
 
-		mainRouter.route().handler(CorsHandler.create("*").allowedHeaders(headers).allowedMethods(httpMethods));
-		mainRouter.route().handler(BodyHandler.create());
+        mainRouter.route()
+            .handler(CorsHandler.create("*")
+                .allowedHeaders(headers)
+                .allowedMethods(httpMethods));
+        mainRouter.route()
+            .handler(BodyHandler.create());
 
-		// 404 failure handler
-		mainRouter.route().last().handler(routingContext -> {
-			routingContext.response().setStatusCode(404).end(Json.encodePrettily(
-					new CommonHttpResponse(CommonConstants.CODE_FAILED, CommonConstants.HTTP_404_NOT_FOUND)));
-		});
+        // 404 failure handler
+        mainRouter.route()
+            .last()
+            .handler(routingContext -> {
+                routingContext.response()
+                    .setStatusCode(404)
+                    .end(Json.encodePrettily(new CommonHttpResponse(CommonConstants.CODE_FAILED, CommonConstants.HTTP_404_NOT_FOUND)));
+            });
 
-		// Add sub-router for user service
-		mainRouter.mountSubRouter("/users", new UserRouter().testRouter());
-		mainRouter.mountSubRouter("/users", new UserRouter().getUserRouter());
+        // Add sub-router for user service
+        mainRouter.mountSubRouter("/users", new UserRouter().testRouter());
+        mainRouter.mountSubRouter("/users", new UserRouter().getUserRouter());
 
-		return mainRouter;
-	}
+        return mainRouter;
+    }
 }

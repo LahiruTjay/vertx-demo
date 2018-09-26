@@ -8,44 +8,47 @@ import io.vertx.ext.sql.SQLConnection;
 
 public class HSQLDBTestVerticle extends AbstractVerticle {
 
-	@Override
-	public void start() throws Exception {
+    @Override
+    public void start() throws Exception {
 
-		final JDBCClient client = JDBCClient.createShared(vertx,
-				new JsonObject().put("url", "jdbc:hsqldb:mem:test?shutdown=true")
-						.put("driver_class", "org.hsqldb.jdbcDriver").put("max_pool_size", 30).put("user", "SA")
-						.put("password", ""));
+        final JDBCClient client = JDBCClient.createShared(vertx, new JsonObject().put("url", "jdbc:hsqldb:mem:test?shutdown=true")
+            .put("driver_class", "org.hsqldb.jdbcDriver")
+            .put("max_pool_size", 30)
+            .put("user", "SA")
+            .put("password", ""));
 
-		client.getConnection(conn -> {
+        client.getConnection(conn -> {
 
-			if (conn.failed()) {
-				System.err.println(conn.cause().getMessage());
-				return;
-			}
+            if (conn.failed()) {
+                System.err.println(conn.cause()
+                    .getMessage());
+                return;
+            }
 
-			final SQLConnection connection = conn.result();
+            final SQLConnection connection = conn.result();
 
-			connection.execute("CREATE TABLE test(id int primary key, name varchar(255))", res -> {
+            connection.execute("CREATE TABLE test(id int primary key, name varchar(255))", res -> {
 
-				if (res.failed()) {
-					throw new RuntimeException(res.cause());
-				}
+                if (res.failed()) {
+                    throw new RuntimeException(res.cause());
+                }
 
-				connection.execute("INSERT INTO test VALUES (1, 'Hello')", insert -> {
-					connection.query("SELECT * FROM test", result -> {
-						for (JsonArray line : result.result().getResults()) {
-							System.out.println(line.encode());
-						}
-						connection.close(done -> {
-							if (done.failed()) {
-								throw new RuntimeException(done.cause());
-							}
-						});
-					});
-				});
-			});
-		});
+                connection.execute("INSERT INTO test VALUES (1, 'Hello')", insert -> {
+                    connection.query("SELECT * FROM test", result -> {
+                        for (JsonArray line : result.result()
+                            .getResults()) {
+                            System.out.println(line.encode());
+                        }
+                        connection.close(done -> {
+                            if (done.failed()) {
+                                throw new RuntimeException(done.cause());
+                            }
+                        });
+                    });
+                });
+            });
+        });
 
-	}
+    }
 
 }
