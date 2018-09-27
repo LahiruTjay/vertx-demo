@@ -22,8 +22,7 @@ public class Main {
                 String deploymentId = response.result();
                 System.out.println("Deployment Id : " + deploymentId + " : " + name);
             } else {
-                response.cause()
-                    .printStackTrace();
+                response.cause().printStackTrace();
             }
         });
     }
