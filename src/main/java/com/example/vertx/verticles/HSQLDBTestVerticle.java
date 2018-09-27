@@ -20,8 +20,7 @@ public class HSQLDBTestVerticle extends AbstractVerticle {
         client.getConnection(conn -> {
 
             if (conn.failed()) {
-                System.err.println(conn.cause()
-                    .getMessage());
+                System.err.println(conn.cause().getMessage());
                 return;
             }
 
@@ -35,8 +34,7 @@ public class HSQLDBTestVerticle extends AbstractVerticle {
 
                 connection.execute("INSERT INTO test VALUES (1, 'Hello')", insert -> {
                     connection.query("SELECT * FROM test", result -> {
-                        for (JsonArray line : result.result()
-                            .getResults()) {
+                        for (JsonArray line : result.result().getResults()) {
                             System.out.println(line.encode());
                         }
                         connection.close(done -> {
