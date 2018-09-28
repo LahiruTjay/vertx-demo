@@ -46,7 +46,6 @@ public class HSQLDBTestVerticle extends AbstractVerticle {
                 });
             });
         });
-
     }
 
 }

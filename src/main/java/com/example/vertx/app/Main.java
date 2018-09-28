@@ -12,8 +12,6 @@ public class Main {
         // VertxOptions options = new VertxOptions();
         vertx = Vertx.vertx();
         deployVerticle(HttpServerVerticle.class, "Http Verticle");
-        // deployVerticle(JDBCTestVerticle.class, "JDBC Verticle");
-        // deployVerticle(SQLTestVerticle.class, "MySQl Verticle");
     }
 
     private static void deployVerticle(Class<?> verticleClass, String name) {
