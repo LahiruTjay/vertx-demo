@@ -27,18 +27,12 @@ public class UserRouter {
 
     public Router getUserRouter() {
         Router router = Router.router(vertx);
-        router.get("/")
-            .handler(userService::gerAllUsers);
-        router.get("/:id")
-            .handler(userService::getUserById);
-        router.post("/")
-            .handler(userService::saveUser);
-        router.patch("/:id")
-            .handler(userService::updateUser);
-        router.delete("/:id")
-            .handler(userService::deleteUserById);
-        router.delete("/")
-            .handler(userService::deleteAllUsers);
+        router.get("/").handler(userService::gerAllUsers);
+        router.get("/:id").handler(userService::getUserById);
+        router.post("/").handler(userService::saveUser);
+        router.patch("/:id").handler(userService::updateUser);
+        router.delete("/:id").handler(userService::deleteUserById);
+        router.delete("/").handler(userService::deleteAllUsers);
         return router;
     }
 }
