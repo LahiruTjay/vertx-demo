@@ -1,6 +1,6 @@
 # vertx-rest-api
 
-This repository contains a simple REST API created using Eclipse Vert.x toolkit.
+This repository contains a simple REST API done using Eclipse Vert.x toolkit.
 
 Todo List :
 
