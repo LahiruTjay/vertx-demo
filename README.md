@@ -2,6 +2,8 @@
 
 This repository contains a simple REST API done using Eclipse Vert.x toolkit.
 
+Basic REST API is complete. However following needs to be implemented.
+
 Todo List :
 
 * Add authentication handler
