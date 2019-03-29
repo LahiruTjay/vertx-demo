@@ -10,3 +10,5 @@ Todo List :
 * Add OAuth 2 or JWT as authentication mechanism
 * Generic return objects for database calls
 * Architechtural changes
+
+Needs to be refactored and dependancies will be updated.
